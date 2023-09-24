@@ -1,6 +1,6 @@
 <h1 align="center">
   <div>
-    <img src="https://raw.githubusercontent.com/mdm-code/mdm-code.github.io/main/scanner_logo.png" alt="logo"/>
+    <img src="https://raw.githubusercontent.com/mdm-code/mdm-code.github.io/main/scanner_logo.png" alt="logo" style="width:256px;height:256px;"/>
   </div>
 </h1>
 

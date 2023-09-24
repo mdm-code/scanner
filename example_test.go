@@ -39,7 +39,6 @@ func ExampleScanner_Reset() {
 	}
 	var t scanner.Token
 	for s.Scan() {
-		t = s.Token()
 	}
 	s.Reset()
 	s.Scan()

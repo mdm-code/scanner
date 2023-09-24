@@ -30,7 +30,7 @@ func ExampleScanner_Scan() {
 
 // ExampleScanner_Reset shows how to reset the scanner back to its initial,
 // zero state. In the example, tokens produced by the scanner the usual way are
-// discarded, and then the scanner gets reset back to its inital state.
+// discarded, and then the scanner gets reset back to its initial state.
 func ExampleScanner_Reset() {
 	r := strings.NewReader("Hello!")
 	s, err := scanner.New(r)

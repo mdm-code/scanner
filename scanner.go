@@ -138,7 +138,8 @@ func (s *Scanner) ScanAll() ([]Token, bool) {
 	return result, true
 }
 
-// Errored ...
+// Errored reports if the Scanner encountered errors while scanning the
+// underlying byte buffer.
 func (s *Scanner) Errored() bool {
 	if len(s.Errors) > 0 {
 		return true

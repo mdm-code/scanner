@@ -67,8 +67,11 @@ func (p Pos) String() string {
 }
 
 // Reset puts the Scanner back in its initial state with the cursor pointing at
-// the start of the byte buffer.
-func (s *Scanner) Reset() { s.Cursor = Zero }
+// the start of the byte buffer and clears all the recored scanner errors.
+func (s *Scanner) Reset() {
+	s.Cursor = Zero
+	s.Errors = nil
+}
 
 // Goto moves the cursor of the Scanner to the position of the t Token.
 func (s *Scanner) Goto(t Token) { s.Cursor = t.Position() }

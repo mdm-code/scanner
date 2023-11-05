@@ -171,9 +171,12 @@ func TestScannerGoto(t *testing.T) {
 	}
 }
 
-// Test if the Reset() method of the Scanner resets its cursor back to zero.
+// Test if the Reset() method of the Scanner resets it to its initial state by
+// setting the cursor at the zero position and clearing up all the recorded
+// errors.
 func TestScannerReset(t *testing.T) {
-	s := Scanner{}
+	s := Scanner{Buffer: []byte{'t', 'e', 's', 't'}}
+	s.Scan()
 	s.Reset()
 	have, want := s.Cursor, Zero
 	if have != want {

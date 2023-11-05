@@ -101,6 +101,7 @@ func (s *Scanner) Scan() bool {
 	if r >= utf8.RuneSelf {
 		r, size = utf8.DecodeRune(s.Buffer[s.Cursor.End:])
 		if r == utf8.RuneError {
+			s.Errors = append(s.Errors, ErrRuneError)
 			return false
 		}
 	}
@@ -131,5 +132,17 @@ func (s *Scanner) ScanAll() ([]Token, error) {
 		t := s.Token()
 		result = append(result, t)
 	}
-	return result, nil
+	var err error
+	if s.Errored() {
+		err = s.Errors[0]
+	}
+	return result, err
+}
+
+// Errored ...
+func (s *Scanner) Errored() bool {
+	if len(s.Errors) > 0 {
+		return true
+	}
+	return false
 }

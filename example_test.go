@@ -8,24 +8,6 @@ import (
 	"github.com/mdm-code/scanner"
 )
 
-// ExampleScanner_ScanAll shows how to convert text into a list of tokens with
-// a single method call to ScanAll() instead of using a for loop to traverse
-// the input one token at a time.
-func ExampleScanner_ScanAll() {
-	in := "Hello!"
-	r := strings.NewReader(in)
-	s, err := scanner.New(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ts, err := s.ScanAll()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(ts)
-	// Output: [{ H 0:1 } { e 1:2 } { l 2:3 } { l 3:4 } { o 4:5 } { ! 5:6 }]
-}
-
 // ExampleScanner_Scan shows how to translate text into a list of tokens with
 // the Scanner public API. It combines New, Scan and Token to get a slice of
 // tokens matching the provided "Hello\!" input.
@@ -100,5 +82,37 @@ func ExampleScanner_Peek() {
 	}
 	result := s.Peek(" a match!")
 	fmt.Println(result)
+	// Output: true
+}
+
+// ExampleScanner_ScanAll shows how to convert text into a list of tokens with
+// a single method call to ScanAll() instead of using a for loop to traverse
+// the input one token at a time.
+func ExampleScanner_ScanAll() {
+	in := "Hello!"
+	r := strings.NewReader(in)
+	s, err := scanner.New(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ts, ok := s.ScanAll()
+	if !ok {
+		log.Fatal(s.Errors[0])
+	}
+	fmt.Println(ts)
+	// Output: [{ H 0:1 } { e 1:2 } { l 2:3 } { l 3:4 } { o 4:5 } { ! 5:6 }]
+}
+
+// ExampleScanner_Errored shows how check if errors were encountered while
+// scanning the read text buffer.
+func ExampleScanner_Errored() {
+	text := "Hello!"
+	r := strings.NewReader(text)
+	s, err := scanner.New(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s.Errors = append(s.Errors, scanner.ErrRuneError)
+	fmt.Println(s.Errored())
 	// Output: true
 }

@@ -11,6 +11,10 @@ import (
 // inteface type io.Reader has a nil value.
 var ErrNilIOReader error = errors.New("provided io.Reader is nil")
 
+// ErrRuneError says that UTF-8 Unicode replacement character was encountered
+// by the Scanner.
+var ErrRuneError error = errors.New("Unicode replacement character found")
+
 // Zero represents the initial state of the Scanner with the cursor pointing at
 // the start of the byte buffer.
 var Zero = Pos{Rune: '\u0000', Start: 0, End: 0}
@@ -31,6 +35,7 @@ type Token struct {
 // instance is stateful and unsafe to use across multiple threads.
 type Scanner struct {
 	Buffer []byte
+	Errors []error
 	Cursor Pos
 }
 
@@ -66,8 +71,11 @@ func (p Pos) String() string {
 }
 
 // Reset puts the Scanner back in its initial state with the cursor pointing at
-// the start of the byte buffer.
-func (s *Scanner) Reset() { s.Cursor = Zero }
+// the start of the byte buffer and clears all the recored scanner errors.
+func (s *Scanner) Reset() {
+	s.Cursor = Zero
+	s.Errors = nil
+}
 
 // Goto moves the cursor of the Scanner to the position of the t Token.
 func (s *Scanner) Goto(t Token) { s.Cursor = t.Position() }
@@ -93,6 +101,7 @@ func (s *Scanner) Scan() bool {
 	if r >= utf8.RuneSelf {
 		r, size = utf8.DecodeRune(s.Buffer[s.Cursor.End:])
 		if r == utf8.RuneError {
+			s.Errors = append(s.Errors, ErrRuneError)
 			return false
 		}
 	}
@@ -117,11 +126,23 @@ func (s *Scanner) Peek(v string) bool {
 
 // ScanAll scans all Tokens representing UTF-8 encoded Unicode characters from
 // the byte buffer underlying the Scanner.
-func (s *Scanner) ScanAll() ([]Token, error) {
+func (s *Scanner) ScanAll() ([]Token, bool) {
 	result := make([]Token, s.Cursor.End)
 	for s.Scan() {
 		t := s.Token()
 		result = append(result, t)
 	}
-	return result, nil
+	if s.Errored() {
+		return result, false
+	}
+	return result, true
+}
+
+// Errored reports if the Scanner encountered errors while scanning the
+// underlying byte buffer.
+func (s *Scanner) Errored() bool {
+	if len(s.Errors) > 0 {
+		return true
+	}
+	return false
 }

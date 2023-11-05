@@ -142,7 +142,7 @@ func TestScannerScan(t *testing.T) {
 
 // Test if the Scanner Scan() method returns false on failure.
 func TestScanFailure(t *testing.T) {
-	s := Scanner{[]byte(string('\uFFFD')), Pos{'\u0000', 0, 0}}
+	s := Scanner{[]byte(string('\uFFFD')), nil, Pos{'\u0000', 0, 0}}
 	if s.Scan() != false {
 		t.Error("scan was expected to return false on rune error")
 	}
@@ -171,13 +171,20 @@ func TestScannerGoto(t *testing.T) {
 	}
 }
 
-// Test if the Reset() method of the Scanner resets its cursor back to zero.
+// Test if the Reset() method of the Scanner resets it to its initial state by
+// setting the cursor at the zero position and clearing up all the recorded
+// errors.
 func TestScannerReset(t *testing.T) {
-	s := Scanner{}
+	s := Scanner{Buffer: []byte{'t', 'e', 's', 't'}}
+	s.Scan()
+	s.Errors = append(s.Errors, ErrRuneError)
 	s.Reset()
 	have, want := s.Cursor, Zero
 	if have != want {
 		t.Errorf("have %v; want %v", have, want)
+	}
+	if len(s.Errors) != 0 {
+		t.Error("scanner errors should be reset")
 	}
 }
 
@@ -242,16 +249,64 @@ func TestScannerScanAll(t *testing.T) {
 			if err != nil {
 				t.Fatal("failed to initialize the scanner")
 			}
-			have, err := s.ScanAll()
+			have, ok := s.ScanAll()
 			for i := 0; i < len(have); i++ {
 				have[i].Buffer = nil
 			}
-			if err != nil {
+			if !ok {
 				t.Fatal("failed to scan all tokens at once")
 			}
 			if !reflect.DeepEqual(have, c.want) {
 				t.Errorf("have: %v; want: %v", have, c.want)
 			}
 		})
+	}
+}
+
+// Test if the scanner reports it has errored out when the Errors slice is not
+// empty.
+func TestErrored(t *testing.T) {
+	cases := []struct {
+		name   string
+		errors []error
+		want   bool
+	}{
+		{"has-errors", []error{ErrRuneError}, true},
+		{"no-errors-nil", nil, false},
+		{"no-errors-empty-slice", []error{}, false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			r := strings.NewReader("test")
+			s, err := New(r)
+			if err != nil {
+				t.Fatal("failed to initialize the scanner")
+			}
+			s.Errors = c.errors
+			have := s.Errored()
+			if have != c.want {
+				t.Errorf("have: %t; want: %t", have, c.want)
+			}
+		})
+	}
+}
+
+// Check if the rune error is recored while scanning so that the scanner can
+// report it through its public API.
+func TestScanRecordsError(t *testing.T) {
+	r := strings.NewReader(".test\uFFFD")
+	s, err := New(r)
+	if err != nil {
+		t.Fatal("failed to initialize the scanner")
+	}
+	_, ok := s.ScanAll()
+	if ok {
+		t.Error("expected !ok to be returned by ScanAll()")
+	}
+	if !s.Errored() {
+		t.Error("expected Errored() to report that scanner has errored out")
+	}
+	if s.Errors == nil {
+		t.Error("expected the error to be appended to the Errors slice")
 	}
 }

@@ -262,3 +262,51 @@ func TestScannerScanAll(t *testing.T) {
 		})
 	}
 }
+
+// Test if the scanner reports it has errored out when the Errors slice is not
+// empty.
+func TestErrored(t *testing.T) {
+	cases := []struct {
+		name   string
+		errors []error
+		want   bool
+	}{
+		{"has-errors", []error{ErrRuneError}, true},
+		{"no-errors-nil", nil, false},
+		{"no-errors-empty-slice", []error{}, false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			r := strings.NewReader("test")
+			s, err := New(r)
+			if err != nil {
+				t.Fatal("failed to initialize the scanner")
+			}
+			s.Errors = c.errors
+			have := s.Errored()
+			if have != c.want {
+				t.Errorf("have: %t; want: %t", have, c.want)
+			}
+		})
+	}
+}
+
+// Check if the rune error is recored while scanning so that the scanner can
+// report it through its public API.
+func TestScanRecordsError(t *testing.T) {
+	r := strings.NewReader(".test\uFFFD")
+	s, err := New(r)
+	if err != nil {
+		t.Fatal("failed to initialize the scanner")
+	}
+	_, err = s.ScanAll()
+	if !errors.Is(err, ErrRuneError) {
+		t.Error("expected ErrRuneError to be returned by ScanAll()")
+	}
+	if !s.Errored() {
+		t.Error("expected Errored() to report that scanner has errored out")
+	}
+	if s.Errors == nil {
+		t.Error("expected the error to be appended to the Errors slice")
+	}
+}

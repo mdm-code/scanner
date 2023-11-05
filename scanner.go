@@ -11,6 +11,10 @@ import (
 // inteface type io.Reader has a nil value.
 var ErrNilIOReader error = errors.New("provided io.Reader is nil")
 
+// ErrRuneError says that UTF-8 Unicode replacement character was encountered
+// by the Scanner.
+var ErrRuneError error = errors.New("Unicode replacement character found")
+
 // Zero represents the initial state of the Scanner with the cursor pointing at
 // the start of the byte buffer.
 var Zero = Pos{Rune: '\u0000', Start: 0, End: 0}

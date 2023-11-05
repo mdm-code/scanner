@@ -249,11 +249,11 @@ func TestScannerScanAll(t *testing.T) {
 			if err != nil {
 				t.Fatal("failed to initialize the scanner")
 			}
-			have, err := s.ScanAll()
+			have, ok := s.ScanAll()
 			for i := 0; i < len(have); i++ {
 				have[i].Buffer = nil
 			}
-			if err != nil {
+			if !ok {
 				t.Fatal("failed to scan all tokens at once")
 			}
 			if !reflect.DeepEqual(have, c.want) {
@@ -299,9 +299,9 @@ func TestScanRecordsError(t *testing.T) {
 	if err != nil {
 		t.Fatal("failed to initialize the scanner")
 	}
-	_, err = s.ScanAll()
-	if !errors.Is(err, ErrRuneError) {
-		t.Error("expected ErrRuneError to be returned by ScanAll()")
+	_, ok := s.ScanAll()
+	if ok {
+		t.Error("expected !ok to be returned by ScanAll()")
 	}
 	if !s.Errored() {
 		t.Error("expected Errored() to report that scanner has errored out")

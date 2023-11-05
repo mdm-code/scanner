@@ -18,9 +18,9 @@ func ExampleScanner_ScanAll() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ts, err := s.ScanAll()
-	if err != nil {
-		log.Fatal(err)
+	ts, ok := s.ScanAll()
+	if !ok {
+		log.Fatal(s.Errors[0])
 	}
 	fmt.Println(ts)
 	// Output: [{ H 0:1 } { e 1:2 } { l 2:3 } { l 3:4 } { o 4:5 } { ! 5:6 }]

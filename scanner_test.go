@@ -206,3 +206,52 @@ func TestScannerPeek(t *testing.T) {
 		})
 	}
 }
+
+// Test if ScanAll() method returns the expected slice of scanned tokens.
+func TestScannerScanAll(t *testing.T) {
+	cases := []struct {
+		name  string
+		input string
+		want  []Token
+	}{
+		{
+			"basic",
+			".tests[].value",
+			[]Token{
+				{Pos{'.', 0, 1}, nil},
+				{Pos{'t', 1, 2}, nil},
+				{Pos{'e', 2, 3}, nil},
+				{Pos{'s', 3, 4}, nil},
+				{Pos{'t', 4, 5}, nil},
+				{Pos{'s', 5, 6}, nil},
+				{Pos{'[', 6, 7}, nil},
+				{Pos{']', 7, 8}, nil},
+				{Pos{'.', 8, 9}, nil},
+				{Pos{'v', 9, 10}, nil},
+				{Pos{'a', 10, 11}, nil},
+				{Pos{'l', 11, 12}, nil},
+				{Pos{'u', 12, 13}, nil},
+				{Pos{'e', 13, 14}, nil},
+			},
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			r := strings.NewReader(c.input)
+			s, err := New(r)
+			if err != nil {
+				t.Fatal("failed to initialize the scanner")
+			}
+			have, err := s.ScanAll()
+			for i := 0; i < len(have); i++ {
+				have[i].Buffer = nil
+			}
+			if err != nil {
+				t.Fatal("failed to scan all tokens at once")
+			}
+			if !reflect.DeepEqual(have, c.want) {
+				t.Errorf("have: %v; want: %v", have, c.want)
+			}
+		})
+	}
+}

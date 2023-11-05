@@ -8,6 +8,24 @@ import (
 	"github.com/mdm-code/scanner"
 )
 
+// ExampleScanner_ScanAll shows how to convert text into a list of tokens with
+// a single method call to ScanAll() instead of using a for loop to traverse
+// the input one token at a time.
+func ExampleScanner_ScanAll() {
+	in := "Hello!"
+	r := strings.NewReader(in)
+	s, err := scanner.New(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ts, err := s.ScanAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(ts)
+	// Output: [{ H 0:1 } { e 1:2 } { l 2:3 } { l 3:4 } { o 4:5 } { ! 5:6 }]
+}
+
 // ExampleScanner_Scan shows how to translate text into a list of tokens with
 // the Scanner public API. It combines New, Scan and Token to get a slice of
 // tokens matching the provided "Hello\!" input.

@@ -1,6 +1,11 @@
 <h1 align="center">
   <div>
-    <img src="https://raw.githubusercontent.com/mdm-code/mdm-code.github.io/main/scanner_logo.png" alt="logo" style="background-color:white;width:256px;height:256px;"/>
+    <img
+      src="https://raw.githubusercontent.com/mdm-code/mdm-code.github.io/main/scanner_logo.jpeg"
+      alt="logo"
+      style="object-fit: contain"
+      width="40%"
+    />
   </div>
 </h1>
 

@@ -31,6 +31,7 @@ type Token struct {
 // instance is stateful and unsafe to use across multiple threads.
 type Scanner struct {
 	Buffer []byte
+	Errors []error
 	Cursor Pos
 }
 

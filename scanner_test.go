@@ -177,10 +177,14 @@ func TestScannerGoto(t *testing.T) {
 func TestScannerReset(t *testing.T) {
 	s := Scanner{Buffer: []byte{'t', 'e', 's', 't'}}
 	s.Scan()
+	s.Errors = append(s.Errors, ErrRuneError)
 	s.Reset()
 	have, want := s.Cursor, Zero
 	if have != want {
 		t.Errorf("have %v; want %v", have, want)
+	}
+	if len(s.Errors) != 0 {
+		t.Error("scanner errors should be reset")
 	}
 }
 

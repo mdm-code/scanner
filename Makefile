@@ -18,7 +18,7 @@ lint: vet
 
 test: lint
 	$(GO) clean -testcache
-	$(GO) test -v -coverprofile=$(COV_PROFILE) -covermode=atomic ./...
+	$(GO) test -v -coverprofile="$(COV_PROFILE)" -covermode="atomic" ./...
 .PHONY: test
 
 install:
@@ -30,7 +30,7 @@ build:
 .PHONY: build
 
 cover: test
-	$(GO) tool cover -html=$(COV_PROFILE)
+	$(GO) tool cover -html="$(COV_PROFILE)"
 .PHONY: cover
 
 clean:

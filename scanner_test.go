@@ -142,7 +142,7 @@ func TestScannerScan(t *testing.T) {
 
 // Test if the Scanner Scan() method returns false on failure.
 func TestScanFailure(t *testing.T) {
-	s := Scanner{[]byte(string('\uFFFD')), Pos{'\u0000', 0, 0}}
+	s := Scanner{[]byte(string('\uFFFD')), nil, Pos{'\u0000', 0, 0}}
 	if s.Scan() != false {
 		t.Error("scan was expected to return false on rune error")
 	}

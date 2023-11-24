@@ -127,7 +127,7 @@ func (s *Scanner) Peek(v string) bool {
 // ScanAll scans all Tokens representing UTF-8 encoded Unicode characters from
 // the byte buffer underlying the Scanner.
 func (s *Scanner) ScanAll() ([]Token, bool) {
-	result := make([]Token, s.Cursor.End)
+	result := make([]Token, 0, len(s.Buffer))
 	for s.Scan() {
 		t := s.Token()
 		result = append(result, t)
